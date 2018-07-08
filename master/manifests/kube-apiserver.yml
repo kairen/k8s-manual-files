@@ -19,7 +19,6 @@ spec:
       - --v=0
       - --logtostderr=true
       - --allow-privileged=true
-      - --anonymous-auth=false
       - --bind-address=0.0.0.0
       - --secure-port=5443
       - --insecure-port=0
