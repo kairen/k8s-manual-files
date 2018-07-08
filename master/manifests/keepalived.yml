@@ -1,0 +1,37 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: ""
+  labels:
+    component: keepalived
+    tier: control-plane
+  name: kube-keepalived
+  namespace: kube-system
+spec:
+  hostNetwork: true
+  priorityClassName: system-cluster-critical
+  containers:
+  - name: kube-keepalived
+    image: docker.io/osixia/keepalived:1.4.5
+    env:
+    - name: KEEPALIVED_VIRTUAL_IPS
+      value: ${ADVERTISE_VIP}
+    - name: KEEPALIVED_INTERFACE
+      value: ${ADVERTISE_VIP_NIC}
+    - name: KEEPALIVED_UNICAST_PEERS
+      value: "#PYTHON2BASH:['${HOST_START}', '${HOST_END}']"
+    - name: KEEPALIVED_PASSWORD
+      value: d0cker
+    - name: KEEPALIVED_PRIORITY
+      value: "${PRIORITY}"
+    - name: KEEPALIVED_ROUTER_ID
+      value: "51"
+    resources:
+      requests:
+        cpu: 100m
+    securityContext:
+      privileged: true
+      capabilities:
+        add:
+        - NET_ADMIN
