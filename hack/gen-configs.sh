@@ -18,7 +18,7 @@ HAPROXY_BACKENDS=""
 for NODE in ${NODES}; do
   IP=$(ssh ${NODE} "ip route get 8.8.8.8" | awk '{print $NF; exit}')
   ETCD_SERVERS="${ETCD_SERVERS}${NODE}=https:\/\/${IP}:2380,"
-  HAPROXY_BACKENDS="${HAPROXY_BACKENDS}    server ${NODE}-api ${IP}:6443 check\n"
+  HAPROXY_BACKENDS="${HAPROXY_BACKENDS}    server ${NODE}-api ${IP}:5443 check\n"
 done
 ETCD_SERVERS=$(echo ${ETCD_SERVERS} | sed 's/.$//')
 
