@@ -1,6 +1,8 @@
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
 address: 0.0.0.0
+port: 10250
+readOnlyPort: 10255
 authentication:
   anonymous:
     enabled: false
@@ -56,7 +58,6 @@ maxPods: 110
 nodeStatusUpdateFrequency: 10s
 oomScoreAdj: -999
 podPidsLimit: -1
-port: 10250
 registryBurst: 10
 registryPullQPS: 5
 resolvConf: /etc/resolv.conf
