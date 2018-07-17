@@ -21,12 +21,15 @@ HOST_START=$(ip route get 8.8.8.8 | awk '{print $NF; exit}')
 ENCRYPT_SECRET=$(openssl rand -hex 16)
 
 ETCD_SERVERS=""
+UNICAST_PEERS=""
 for NODE in ${NODES}; do
   IP=$(ssh ${NODE} "ip route get 8.8.8.8" | awk '{print $NF; exit}')
   ETCD_SERVERS="${ETCD_SERVERS}https:\/\/${IP}:2379,"
+  UNICAST_PEERS="${UNICAST_PEERS}'${IP}',"
   HOST_END=${IP}
 done
 ETCD_SERVERS=$(echo ${ETCD_SERVERS} | sed 's/.$//')
+UNICAST_PEERS=$(echo ${UNICAST_PEERS} | sed 's/,$//')
 
 # generate manifests
 i=0
@@ -38,14 +41,13 @@ for NODE in ${NODES}; do
 
   # configure keepalived
   NIC=$(ssh ${NODE} "ip route get 8.8.8.8" | awk '{print $5; exit}')
-  PRIORITY=100
+  PRIORITY=150
   if [ ${i} -eq 0 ]; then
-    PRIORITY=200
+    PRIORITY=100
   fi
   ssh ${NODE} "sed -i 's/\${ADVERTISE_VIP}/${ADVERTISE_VIP}/g' ${MANIFESTS_PATH}/keepalived.yml;
                sed -i 's/\${ADVERTISE_VIP_NIC}/${NIC}/g' ${MANIFESTS_PATH}/keepalived.yml;
-               sed -i 's/\${HOST_START}/${HOST_START}/g' ${MANIFESTS_PATH}/keepalived.yml;
-               sed -i 's/\${HOST_END}/${HOST_END}/g' ${MANIFESTS_PATH}/keepalived.yml;
+               sed -i 's/\${UNICAST_PEERS}/${UNICAST_PEERS}/g' ${MANIFESTS_PATH}/keepalived.yml;
                sed -i 's/\${PRIORITY}/${PRIORITY}/g' ${MANIFESTS_PATH}/keepalived.yml"
 
   # configure kue-apiserver

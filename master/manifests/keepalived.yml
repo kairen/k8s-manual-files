@@ -20,7 +20,7 @@ spec:
     - name: KEEPALIVED_INTERFACE
       value: ${ADVERTISE_VIP_NIC}
     - name: KEEPALIVED_UNICAST_PEERS
-      value: "#PYTHON2BASH:['${HOST_START}', '${HOST_END}']"
+      value: "#PYTHON2BASH:[${UNICAST_PEERS}]"
     - name: KEEPALIVED_PASSWORD
       value: d0cker
     - name: KEEPALIVED_PRIORITY
