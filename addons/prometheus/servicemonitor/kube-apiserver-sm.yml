@@ -13,7 +13,7 @@ spec:
     scheme: https
     tlsConfig:
       caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-      serverName: kubernetes
+      serverName: kubernetes.default
   jobLabel: component
   namespaceSelector:
     matchNames:
