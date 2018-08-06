@@ -52,9 +52,9 @@ spec:
     matchLabels:
       k8s-app: kube-dns
   template:
-    annotations:
-      scheduler.alpha.kubernetes.io/critical-pod: ""
     metadata:
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ""
       labels:
         k8s-app: kube-dns
     spec:
