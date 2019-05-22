@@ -1,0 +1,19 @@
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: sriov-conf
+spec:
+  config: |
+    {
+      "name": "ib.0",
+      "type": "sriov",
+      "if0": "ib0",
+      "ipam": {
+        "type": "host-local",
+        "subnet": "10.55.0.0/26",
+        "routes": [
+          { "dst": "0.0.0.0/0" }
+        ],
+      "gateway": "10.55.0.1"
+      }
+    }

@@ -292,9 +292,6 @@ spec:
             # Cluster type to identify the deployment type
             - name: CLUSTER_TYPE
               value: "k8s,bgp"
-            # Auto-detect the BGP IP address.
-            - name: IP_AUTODETECTION_METHOD
-              value: "can-reach=8.8.8.8"
             - name: IP
               value: "autodetect"
             # Enable IPIP
@@ -310,13 +307,17 @@ spec:
             # chosen from this range. Changing this value after installation will have
             # no effect. This should fall within "--cluster-cidr".
             - name: CALICO_IPV4POOL_CIDR
-              value: "10.234.0.0/16"
+              value: "10.244.0.0/16"
             # Disable file logging so "kubectl logs" works.
             - name: CALICO_DISABLE_FILE_LOGGING
               value: "true"
             # Set Felix endpoint to host default action to ACCEPT.
             - name: FELIX_DEFAULTENDPOINTTOHOSTACTION
               value: "ACCEPT"
+            - name: IP_AUTODETECTION_METHOD
+              value: "first-found"
+            - name: IP6_AUTODETECTION_METHOD
+              value: "first-found"
             # Disable IPv6 on Kubernetes.
             - name: FELIX_IPV6SUPPORT
               value: "false"

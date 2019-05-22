@@ -81,30 +81,19 @@ data:
           "name": "default-cni-network",
           "plugins": [
             {
-              "name": "k8s-pod-network",
-              "cniVersion": "0.3.0",
-              "type": "calico",
-              "log_level": "info",
-              "masterplugin": true,
-              "datastore_type": "kubernetes",
-              "nodename": "__KUBERNETES_NODE_NAME__",
-              "mtu": 1440,
-              "ipam": {
-                "type": "host-local",
-                "subnet": "usePodCidr"
+              "type": "flannel",
+              "name": "flannel.1",
+                "delegate": {
+                  "isDefaultGateway": true,
+                  "hairpinMode": true
+                }
               },
-              "policy": {
-                "type": "k8s"
-              },
-              "kubernetes": {
-                "kubeconfig": "/etc/cni/multus/calico/net.d/calico-kubeconfig"
+              {
+                "type": "portmap",
+                "capabilities": {
+                  "portMappings": true
+                }
               }
-            },
-            {
-              "type": "portmap",
-              "snat": true,
-              "capabilities": {"portMappings": true}
-            }
           ]
         }
       ],
@@ -144,18 +133,9 @@ spec:
       containers:
       - name: kube-multus
         image: nfvpe/multus:v3.2
-        env:
-          - name: KUBERNETES_NODE_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: spec.nodeName
-        command:
-          - /bin/bash
-          - -cex
-          - |
-            #!/bin/bash
-            sed "s|__KUBERNETES_NODE_NAME__|${KUBERNETES_NODE_NAME}|g" /usr/src/multus-cni/images/70-multus.conf.template  > /usr/src/multus-cni/images/70-multus.conf
-            /entrypoint.sh
+        command: ["/entrypoint.sh"]
+        args:
+        - "--multus-conf-file=/tmp/multus-conf/70-multus.conf"
         resources:
           requests:
             cpu: "100m"
@@ -171,8 +151,7 @@ spec:
         - name: cnibin
           mountPath: /host/opt/cni/bin
         - name: multus-cfg
-          mountPath: /usr/src/multus-cni/images/70-multus.conf.template
-          subPath: "cni-conf.json"
+          mountPath: /tmp/multus-conf
       volumes:
         - name: cni
           hostPath:
@@ -183,3 +162,6 @@ spec:
         - name: multus-cfg
           configMap:
             name: multus-cni-config
+            items:
+            - key: cni-conf.json
+              path: 70-multus.conf
